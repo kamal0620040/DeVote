@@ -17,8 +17,8 @@ contract Voting {
         address owner;
         uint256 endTime;
         uint256[] votes; // [1,2] => 1 vote for 1st option and 2 votes for 2nd
-        mapping(address => bool) members;
-        mapping (address => bool) requestedMembers;
+        address[] members;
+        address[] requestedMembers;
         mapping(address => bool) voted;
         uint256 options;
     }
@@ -33,18 +33,18 @@ contract Voting {
     );
     event Voted(
         address indexed voter,
-        uint256 indexed voteId,
+        uint256 indexed electionId,
         uint256 indexed option,
         uint256 createdAt
     );
 
     modifier isMemberOfElection(uint256 electionId){
-        require(elections[electionId].members[msg.sender],'not member of election');
+        require(isMember(electionId, msg.sender), 'Not a member of the election');
         _;
     }
 
     modifier hasSendRequstToBecomeMember(uint256 electionId){
-        require(elections[electionId].requestedMembers[msg.sender],'didnot send request to become memeber');
+        require(hasRequestedMembership(electionId, msg.sender), 'Did not send a request to become a member');
         _;
     }
 
@@ -105,6 +105,64 @@ contract Voting {
             elections[electionId].votes,
             elections[electionId].endTime
         );
+    }
+
+    function isMember(uint256 electionId, address member) public view returns (bool) {
+        Election storage election = elections[electionId];
+
+        for (uint256 i = 0; i < election.members.length; i++) {
+            if (election.members[i] == member) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function hasRequestedMembership(uint256 electionId, address member) public view returns (bool) {
+        Election storage election = elections[electionId];
+
+        for (uint256 i = 0; i < election.requestedMembers.length; i++) {
+            if (election.requestedMembers[i] == member) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function sendRequestToBecomeMember(uint256 electionId) external {
+        require(electionId < nextElectionId, "Election does not exist");
+        require(!isMember(electionId, msg.sender), "Already a member");
+        require(!hasRequestedMembership(electionId, msg.sender), "Request already sent");
+
+        elections[electionId].requestedMembers.push(msg.sender);
+    }
+
+    function getRequestedMembers(uint256 electionId) public view onlyAdmin returns (address[] memory) {
+        return elections[electionId].requestedMembers;
+    }
+
+    function getAllElections() public view returns (
+        string[] memory,
+        address[] memory,
+        uint256[] memory,
+        uint256[] memory
+    ) {
+        string[] memory uris = new string[](nextElectionId);
+        address[] memory owners = new address[](nextElectionId);
+        uint256[] memory endTimes = new uint256[](nextElectionId);
+        uint256[] memory electionIds = new uint256[](nextElectionId);
+
+        for (uint256 i = 0; i < nextElectionId; i++) {
+            Election storage election = elections[i];
+            uris[i] = election.uri;
+            owners[i] = election.owner;
+            endTimes[i] = election.endTime;
+            electionIds[i] = i;
+        }
+
+        return (uris, owners, endTimes, electionIds);
     }
 
 }
