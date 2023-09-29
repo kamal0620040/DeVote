@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import CarouselComponent from '@/components/carouselComponent';
-import { Button } from '@/components';
+import { Button, CustomWebcam, Modal } from '@/components';
 import images from '../../assets';
 import { VoteContext } from '../../context/VotingContext';
 
@@ -15,6 +14,8 @@ const Voting = () => {
   const [overallElectionData, setOverallElectionData] = useState(null);
   const [currentElection, setCurrentElection] = useState(null);
 
+  const [votingModel, setVotingModel] = useState(false);
+  const [btnDisabled, setBtnDisabled] = useState(true);
   //   const info = [
   //     {
   //       name: 'A',
@@ -83,9 +84,33 @@ const Voting = () => {
         <div className="flex p-4">
           <p className="font-poppins font-semibold text-xl">{currentElection.candidates[currentIndex].name}</p>
           <p className="font-poppins font-semibold text-xl">{currentElection.candidates[currentIndex].partyName}</p>
-          <Button btnName="Vote" classStyles="rounded-lg  ml-4" handleClick={() => { voteCandidate(id, currentIndex); }} />
+          <Button btnName="Vote" classStyles="rounded-lg  ml-4" handleClick={() => { setVotingModel(true); }} />
         </div>
       </div>
+      { votingModel
+      && (
+      <Modal
+        header="Verify Yourself"
+        body={(
+          <div className="flexCenter flex-col text-center" onClick={() => setVotingModel(false)}>
+            <CustomWebcam />
+          </div>
+          )}
+        footer={(
+          <div className="flexCentre flex-col ">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:bg-blue-500 disabled:bg-opacity-50 disabled:cursor-not-allowed"
+              disabled={btnDisabled}
+              type="button"
+              onClick={() => { voteCandidate(id, currentIndex); }}
+            >
+              Vote
+            </button>
+          </div>
+        )}
+        handleClose={() => { setVotingModel(false); }}
+      />
+      )}
     </div>
   );
 };

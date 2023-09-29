@@ -22,13 +22,13 @@ const CustomWebcam = () => {
       {imgSrc ? (
         <img src={imgSrc} alt="webcam" />
       ) : (
-        <Webcam height={600} width={600} ref={webcamRef} />
+        <Webcam height={600} width={600} ref={webcamRef} className="rounded-lg mb-2" />
       )}
       <div className="btn-container">
         {imgSrc ? (
-          (<Button btnName="Retake" handleClick={retake} />)
+          (<Button btnName="Retake" handleClick={retake} classStyles="rounded-lg" />)
         ) : (
-          <Button btnName="Capture" handleClick={capture} />
+          <Button btnName="Capture" handleClick={capture} classStyles="rounded-lg" />
         )}
       </div>
     </div>
