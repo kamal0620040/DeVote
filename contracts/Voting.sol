@@ -44,7 +44,7 @@ contract Voting {
     }
 
     modifier hasSendRequstToBecomeMember(uint256 electionId){
-        require(hasRequestedMembership(electionId, msg.sender), 'Did not send a request to become a member');
+        require(hasRequestedMembership(electionId), 'Did not send a request to become a member');
         _;
     }
 
@@ -119,11 +119,15 @@ contract Voting {
         return false;
     }
 
-    function hasRequestedMembership(uint256 electionId, address member) public view returns (bool) {
+    function checkIsReqSenderMember(uint electionId) public view returns(bool) {
+        return isMember(electionId, msg.sender);
+    }
+
+    function hasRequestedMembership(uint256 electionId) public view returns (bool) {
         Election storage election = elections[electionId];
 
         for (uint256 i = 0; i < election.requestedMembers.length; i++) {
-            if (election.requestedMembers[i] == member) {
+            if (election.requestedMembers[i] == msg.sender) {
                 return true;
             }
         }
@@ -131,10 +135,28 @@ contract Voting {
         return false;
     }
 
+    function acceptRequestToBecomeMember(uint256 electionId, address member) external onlyAdmin {
+        Election storage election = elections[electionId];
+        // delete the member form requested array
+        for (uint256 i = 0; i < election.requestedMembers.length; i++) {
+            if(election.requestedMembers[i] == member){
+                // election.requestedMembers[i];
+                if(election.requestedMembers.length > 1){
+                    election.requestedMembers[i] = election.requestedMembers[election.requestedMembers.length - 1];
+                    election.requestedMembers.pop();
+                }else{
+                    election.requestedMembers.pop();
+                }
+            }
+        }
+        // add the member to the election member array
+        election.members.push(member);
+    }
+
     function sendRequestToBecomeMember(uint256 electionId) external {
         require(electionId < nextElectionId, "Election does not exist");
         require(!isMember(electionId, msg.sender), "Already a member");
-        require(!hasRequestedMembership(electionId, msg.sender), "Request already sent");
+        require(!hasRequestedMembership(electionId), "Request already sent");
 
         elections[electionId].requestedMembers.push(msg.sender);
     }

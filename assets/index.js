@@ -10,6 +10,7 @@ import right from './right.png';
 import loader from './loader.gif';
 import search from './Search.png';
 import arrow from './arrow.png';
+import defaultVoteCard from './defaultVoteCard.png';
 
 export default {
   logoMain,
@@ -24,4 +25,5 @@ export default {
   loader,
   search,
   arrow,
+  defaultVoteCard,
 };

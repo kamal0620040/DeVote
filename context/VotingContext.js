@@ -27,6 +27,7 @@ export const VoteContext = React.createContext();
 export const VoteProvider = ({ children }) => {
   const name = 'Kamal';
   const [currentAccount, setCurrentAccount] = useState('');
+  const [isAdminState, setIsAdminState] = useState(null);
 
   const checkIfWalletIsConnected = async () => {
     // check methamask is installed
@@ -97,10 +98,10 @@ export const VoteProvider = ({ children }) => {
     const signer = provider.getSigner();
     const contract = fetchContract(signer);
 
-    await contract.isAdmin().then((result) => console.log('isAdmin', result)).catch((err) => console.log(err));
+    await contract.isAdmin().then((result) => setIsAdminState(result)).catch((err) => console.log(err));
   };
 
-  const elections = async () => {
+  const elections = async (callback) => {
     const web3modal = new Web3Modal();
     const connection = await web3modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
@@ -112,11 +113,11 @@ export const VoteProvider = ({ children }) => {
 
     const filter = contract.filters.ElectionCreated();
     // contract.queryFilter(filter).then((result) => console.log(result)).catch((err) => console.log(err));
-    contract.queryFilter(filter).then((result) => getElectionVoteData(contract, result)).catch((err) => console.log(err));
+    contract.queryFilter(filter).then((result) => getElectionVoteData(contract, result, callback)).catch((err) => console.log(err));
   };
 
   // eslint-disable-next-line no-shadow
-  const getElectionVoteData = async (contract, elections) => {
+  const getElectionVoteData = async (contract, elections, callback) => {
     const promises = [];
     const newElections = [];
     // eslint-disable-next-line no-restricted-syntax
@@ -151,18 +152,111 @@ export const VoteProvider = ({ children }) => {
       promises.push(promise);
     }
     await Promise.all(promises);
-    console.log(newElections);
+    // console.log(newElections);
+    if (callback) {
+      callback(newElections);
+    }
+  };
+
+  const getElectionWithId = async (id) => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+
+    const dataElection = await contract.getVote(id).then(async (voteData) => {
+      const uri = voteData[0];
+      const owner = voteData[1];
+      // console.log(owner);
+
+      const { electionDetail } = await fetch(uri).then((res) => res.json());
+      // console.log(electionDetail);
+      return {
+        electionDetail,
+        owner,
+      };
+    });
+    return dataElection;
+  };
+
+  const becomeMemberOfElection = async (elecId) => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+    await contract.sendRequestToBecomeMember(elecId).then(() => alert('Success')).catch(() => alert('Failed'));
+  };
+
+  const hadRequestedForElection = async (electionId) => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+    const result = await contract.hasRequestedMembership(electionId).then((res) => res);
+    return result;
+  };
+
+  const getRequestedMemberOfElection = async (electionId) => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+    const result = await contract.getRequestedMembers(electionId).then((res) => res);
+    return result;
+  };
+
+  const checkCanVote = async (electionId) => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+    const result = await contract.checkIsReqSenderMember(electionId).then((res) => res);
+    return result;
+  };
+
+  const acceptRequestToBecomeMember = async (electionId, member) => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+    const result = await contract.acceptRequestToBecomeMember(electionId, member).then(() => 'success').catch(() => 'failed');
+    return result;
   };
 
   useEffect(() => {
     checkIfWalletIsConnected();
     isAdmin();
-    elections();
+    // checkCanVote(0);
+    // elections();
     // createVoting('something');
   }, []);
 
   return (
-    <VoteContext.Provider value={{ name, connectWallet, currentAccount, uploadToIPFS, createElection }}>
+    <VoteContext.Provider value={{ name, connectWallet, currentAccount, uploadToIPFS, createElection, elections, getElectionWithId, isAdminState, becomeMemberOfElection, hadRequestedForElection, getRequestedMemberOfElection, checkCanVote, acceptRequestToBecomeMember }}>
       {children}
     </VoteContext.Provider>
   );
