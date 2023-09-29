@@ -5,8 +5,8 @@ import { ChevronLeft, ChevronRight } from 'react-feather';
 const CarouselComponent = ({ children: info }) => {
   const [currIndex, setCurrIndex] = useState(0);
 
-  console.log('From Carousel Component');
-  console.log(info);
+  // console.log('From Carousel Component');
+  // console.log(info);
 
   function prev() {
     if (currIndex === 0) {
@@ -28,7 +28,7 @@ const CarouselComponent = ({ children: info }) => {
     <div className="overflow-hidden relative mx-48 mt-20">
       {/* <div className="text-2xl">VOTING</div> */}
       <div
-        className="flex transition-transform ease-out duration-700"
+        className="z-50 flex transition-transform ease-out duration-700"
         style={{ transform: `translateX(-${currIndex * 100}%)` }}
       >
         {info}

@@ -247,6 +247,19 @@ export const VoteProvider = ({ children }) => {
     return result;
   };
 
+  const voteCandidate = async (electionId, option) => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+    const result = await contract.vote(electionId, option).then(() => 'success').catch(() => 'failed');
+    return result;
+  };
+
   useEffect(() => {
     checkIfWalletIsConnected();
     isAdmin();
@@ -256,7 +269,7 @@ export const VoteProvider = ({ children }) => {
   }, []);
 
   return (
-    <VoteContext.Provider value={{ name, connectWallet, currentAccount, uploadToIPFS, createElection, elections, getElectionWithId, isAdminState, becomeMemberOfElection, hadRequestedForElection, getRequestedMemberOfElection, checkCanVote, acceptRequestToBecomeMember }}>
+    <VoteContext.Provider value={{ name, connectWallet, currentAccount, uploadToIPFS, createElection, elections, getElectionWithId, isAdminState, becomeMemberOfElection, hadRequestedForElection, getRequestedMemberOfElection, checkCanVote, acceptRequestToBecomeMember, voteCandidate }}>
       {children}
     </VoteContext.Provider>
   );

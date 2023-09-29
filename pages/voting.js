@@ -1,5 +1,6 @@
 /* eslint-disable quotes */
 /* eslint-disable import/no-unresolved */
+import { Button } from "@/components";
 import CarouselComponent from "@/components/carouselComponent";
 
 const Voting = () => {
@@ -78,12 +79,7 @@ const Voting = () => {
             {/* Name Part */}
             <div className="absolute bottom-6 bg-white/[0.7] w-96 px-10 py-5 rounded-2xl">
               <h1 className="text-2xl font-extrabold text-black flex justify-center">{i.name}</h1>
-              <button
-                type="button"
-                className="text-white bg-regal-blue px-6 py-2 my-2 rounded-2xl text-sm"
-              >
-                ButtonText
-              </button>
+              <Button btnName="vote" classStyles="rounded-lg" />
             </div>
           </div>
         ))}
