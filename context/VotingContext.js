@@ -7,7 +7,7 @@ import { create as ipfsHttpClient } from 'ipfs-http-client';
 
 import { VoteAddress, VoteAddressABI } from './constants';
 
-const projectId = process.env.NEXT_PUBLIC_IPFS_PROJECT_ID;
+const projectId = process.env.NEXT_PUBLIC_IPFS_API_KEY;
 const projectSecret = process.env.NEXT_PUBLIC_API_KEY_SECRET;
 const auth = `Basic ${Buffer.from(`${projectId}:${projectSecret}`).toString('base64')}`;
 
@@ -19,6 +19,8 @@ const client = ipfsHttpClient({
     authorization: auth,
   },
 });
+
+const fetchContract = (signerOrProvider) => new ethers.Contract(VoteAddress, VoteAddressABI, signerOrProvider);
 
 export const VoteContext = React.createContext();
 
@@ -58,12 +60,109 @@ export const VoteProvider = ({ children }) => {
     }
   };
 
+  const createVoting = async (url, date, options) => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+
+    await contract.createElection(url, date, options).then(() => alert('Success')).catch((err) => alert(err));
+  };
+
+  const createElection = async (jsonData, date, options, router) => {
+    const subdomain = 'https://devote.infura-ipfs.io';
+    try {
+      const added = await client.add(jsonData);
+      const url = `${subdomain}/ipfs/${added.path}`;
+      console.log('Data', url);
+      await createVoting(url, date, options);
+    //   router.push('/');
+    } catch (error) {
+      console.log(error);
+      console.log('Error uploading data to IPFS.');
+    }
+  };
+
+  const isAdmin = async () => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+
+    await contract.isAdmin().then((result) => console.log('isAdmin', result)).catch((err) => console.log(err));
+  };
+
+  const elections = async () => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    // const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // who is making this
+    const signer = provider.getSigner();
+    const contract = fetchContract(signer);
+
+    const filter = contract.filters.ElectionCreated();
+    // contract.queryFilter(filter).then((result) => console.log(result)).catch((err) => console.log(err));
+    contract.queryFilter(filter).then((result) => getElectionVoteData(contract, result)).catch((err) => console.log(err));
+  };
+
+  // eslint-disable-next-line no-shadow
+  const getElectionVoteData = async (contract, elections) => {
+    const promises = [];
+    const newElections = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const election of elections) {
+      const { owner, electionId, createdAt, endTime } = election.args;
+      const promise = contract.getVote(electionId).then(async (voteData) => {
+        const uri = voteData[0];
+        if (!uri) return;
+        const currentVotes = voteData[2];
+        const currentVoteNumbers = currentVotes.map((val) => val.toNumber());
+
+        const newElection = {
+          id: electionId.toNumber(),
+          owner,
+          createdAt: createdAt.toNumber(),
+          endTime: endTime.toNumber(),
+          totalVotes: currentVoteNumbers.reduce((sum, value) => sum + value, 0),
+          votes: currentVoteNumbers,
+        };
+
+        try {
+          await fetch(uri).then((result) => result.json()).then((res) => {
+            newElection.electionDetail = res.electionDetail;
+            newElection.candidates = res.candidates;
+            newElection.options = res.candidates.length;
+            newElections.push(newElection);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      });
+      promises.push(promise);
+    }
+    await Promise.all(promises);
+    console.log(newElections);
+  };
+
   useEffect(() => {
     checkIfWalletIsConnected();
+    isAdmin();
+    elections();
+    // createVoting('something');
   }, []);
 
   return (
-    <VoteContext.Provider value={{ name, connectWallet, currentAccount, uploadToIPFS }}>
+    <VoteContext.Provider value={{ name, connectWallet, currentAccount, uploadToIPFS, createElection }}>
       {children}
     </VoteContext.Provider>
   );
