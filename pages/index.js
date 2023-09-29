@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { VoteContext } from '../context/VotingContext';
-import { CustomWebcam, ElectionCard } from '../components';
+import { ElectionCard } from '../components';
 
 const Home = () => {
   const [electionsData, setElectionsData] = useState(null);
