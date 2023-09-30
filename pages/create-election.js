@@ -124,12 +124,20 @@ const CreateElection = () => {
                   value={val.partyName}
                   onChange={(event) => handleFeatureChange(index, event)}
                 />
+
               </div>
+
               <div className="mt-4">
                 <p className="font-poppins dark:text-white text-vote-black-1 font-semibold text-xl">
                   Image
                 </p>
-                <div className="mt-4 flex flex-c" onMouseMove={() => setCandidateIndexForImage(index)}>
+                <div
+                  className="mt-4 flex flex-c"
+                  onMouseMove={() => {
+                    setCandidateIndexForImage(index);
+                    console.log(index);
+                  }}
+                >
                   {/* spreading props provided by getRootProps from the useDropzone hook */}
                   <div
                     {...getRootProps()}

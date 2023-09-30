@@ -152,6 +152,10 @@ contract Voting {
         // add the member to the election member array
         election.members.push(member);
     }
+    
+    function getCurrentPK() public view returns (address) {
+        return msg.sender;
+    }
 
     function sendRequestToBecomeMember(uint256 electionId) external {
         require(electionId < nextElectionId, "Election does not exist");
@@ -164,6 +168,7 @@ contract Voting {
     function getRequestedMembers(uint256 electionId) public view onlyAdmin returns (address[] memory) {
         return elections[electionId].requestedMembers;
     }
+
 
     function getAllElections() public view returns (
         string[] memory,

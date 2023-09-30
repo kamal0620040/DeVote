@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['devote.infura-ipfs.io'],
+    domains: ['devote.infura-ipfs.io', 'res.cloudinary.com'],
   },
 };
 
