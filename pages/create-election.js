@@ -96,7 +96,7 @@ const CreateElection = () => {
         /> */}
         <div className="mt-8">
           <p className="font-poppins dark:text-white text-vote-black-1 font-semibold text-xl">
-            Election Date
+            Election End Date
           </p>
           <DatePicker
             className="mt-4 dark:bg-vote-black-1 bg-white text-vote-gray-1 p-3 rounded-md"

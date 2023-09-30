@@ -107,6 +107,10 @@ contract Voting {
         );
     }
 
+    function hasAlreadyVoted(uint256 electionId) public view returns(bool){
+        return elections[electionId].voted[msg.sender];
+    }
+
     function isMember(uint256 electionId, address member) public view returns (bool) {
         Election storage election = elections[electionId];
 
@@ -152,7 +156,7 @@ contract Voting {
         // add the member to the election member array
         election.members.push(member);
     }
-    
+
     function getCurrentPK() public view returns (address) {
         return msg.sender;
     }

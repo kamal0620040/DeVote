@@ -260,7 +260,7 @@ export const VoteProvider = ({ children }) => {
     return result;
   };
 
-  const voteCandidate = async (electionId, option) => {
+  const voteCandidate = async (electionId, option, router) => {
     const web3modal = new Web3Modal();
     const connection = await web3modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
@@ -270,7 +270,11 @@ export const VoteProvider = ({ children }) => {
     const signer = provider.getSigner();
     const contract = fetchContract(signer);
     const result = await contract.vote(electionId, option).then(() => 'success').catch(() => 'failed');
-    return result;
+    if (result === 'success') {
+      router.push(`/view-result/${electionId}`);
+    } else {
+    //   router.push(`/view-result/${electionId}`);
+    }
   };
 
   useEffect(() => {

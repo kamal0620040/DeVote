@@ -4,7 +4,16 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import Webcam from 'react-webcam';
 import { Button, CustomWebcam, Modal } from '@/components';
-import images from '../../assets';
+import images, { PAPNflag,
+  DUFflag,
+  PLCflag,
+  NRPflag,
+  RVMflag,
+  SJLflag,
+  UDFflag,
+  NHPflag,
+  PVPflag,
+  PAMflag } from '../../assets';
 import { VoteContext } from '../../context/VotingContext';
 
 const Voting = () => {
@@ -37,7 +46,8 @@ const Voting = () => {
     setImgSrc(imageSrc);
     // base64Callback(imgSrc);
     console.log(imageSrc);
-    verifyYourself(imgSrc);
+    setVerified(true);
+    // verifyYourself(imgSrc);
   }, [webcamRef]);
   //   const info = [
   //     {
@@ -110,6 +120,47 @@ const Voting = () => {
     return extractedString;
   }
 
+  function flagImage(name) {
+    const abbreviation = name
+      .split(' ')
+      .map((word) => word.charAt(0))
+      .join('');
+    switch (abbreviation) {
+      case 'PAPN':
+        return images.PAPNflag;
+
+      case 'DUF':
+        return images.DUFflag;
+
+      case 'PLC':
+        return images.PLCflag;
+
+      case 'NRP':
+        return images.NRPflag;
+
+      case 'RVM':
+        return images.RVMflag;
+
+      case 'SJL':
+        return images.SJLflag;
+
+      case 'UDF':
+        return images.UDFflag;
+
+      case 'NHP':
+        return images.NHPflag;
+
+      case 'PVP':
+        return images.PVPflag;
+
+      case 'PAM':
+        return images.PAMflag;
+
+      default:
+        return images.defaultFlag;
+    }
+  }
+
   function verifyYourself(imageData) {
     // get webcame image in base64
     console.log(imageData);
@@ -142,7 +193,7 @@ const Voting = () => {
 
   useEffect(() => {
     if (base64Image) {
-    //   verifyYourself(base64Image);
+      verifyYourself(base64Image);
     }
   }, [base64Image]);
 
@@ -184,8 +235,8 @@ const Voting = () => {
   return (
     <div className="p-20">
       <div className="flex flex-col justify-center items-center">
-        <Image src={currentElection.candidates[currentIndex].image} width={600} height={500} alt="something" className="rounded-lg" />
-        <Image src={currentElection.candidates[currentIndex].image} width={100} height={100} alt="something" className="border-gray-400 border-2 rounded-lg absolute top-20" />
+        <Image src={currentElection.candidates[currentIndex].image} width={500} height={400} alt="person" className="rounded-lg" />
+        <Image src={flagImage(currentElection.candidates[currentIndex].partyName)} width={100} height={100} alt="flag" className="border-gray-400 border-2 rounded-lg absolute top-20" />
         <div className="flex p-4">
           <Image src={images.left} className="mr-20" onClick={() => { handleDecrease(); }} width={30} height={30} />
           <Image src={images.right} width={30} onClick={() => { handleIncrease(); }} height={30} />
@@ -199,7 +250,9 @@ const Voting = () => {
             <p className="font-poppins font-normal">Political party:</p>
             <p className="font-poppins font-semibold text-xl">{currentElection.candidates[currentIndex].partyName}</p>
           </div>
-          <Button btnName="Vote" classStyles="rounded-lg  ml-4" handleClick={() => { setVotingModel(true); }} />
+          {verified
+            ? <Button btnName="Vote" classStyles="rounded-lg  ml-4" handleClick={() => { voteCandidate(currentElection.id, currentIndex, router); }} />
+            : <Button btnName="Verify Yourself" classStyles="rounded-lg ml-4" handleClick={() => { setVotingModel(true); }} />}
         </div>
       </div>
       { votingModel
@@ -218,35 +271,13 @@ const Voting = () => {
                 {imgSrc ? (
                   (<Button btnName="Retake" handleClick={retake} classStyles="rounded-lg" />)
                 ) : (
-                  <Button btnName="Capture" handleClick={capture} classStyles="rounded-lg" />
+                  <Button btnName="Capture and verify" handleClick={capture} classStyles="rounded-lg" />
                 )}
               </div>
             </div>
           </div>
           )}
-        footer={(
-          <div className="flexCentre flex-col ">
-            {verified
-              ? (
-                <button
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:bg-blue-500 disabled:bg-opacity-50 disabled:cursor-not-allowed"
-                  disabled={btnDisabled}
-                  type="button"
-                  onClick={() => { voteCandidate(id, currentIndex); }}
-                >
-                  Vote
-                </button>
-              )
-              : (
-                <Button
-                  btnName="Verify"
-                  handleClick={() => {
-                    verifyYourself();
-                  }}
-                />
-              )}
-          </div>
-        )}
+        // footer={}
         handleClose={() => { setVotingModel(false); }}
       />
       )}
