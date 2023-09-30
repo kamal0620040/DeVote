@@ -8,7 +8,7 @@ import { VoteContext } from '../../context/VotingContext';
 const Voting = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { elections, voteCandidate } = useContext(VoteContext);
+  const { elections, voteCandidate, checkCanVote, isAdminState } = useContext(VoteContext);
   const [currentActiveData, setCurrentActiveData] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [overallElectionData, setOverallElectionData] = useState(null);
@@ -16,6 +16,7 @@ const Voting = () => {
 
   const [votingModel, setVotingModel] = useState(false);
   const [btnDisabled, setBtnDisabled] = useState(true);
+  const [isMember, setIsMember] = useState(false);
   //   const info = [
   //     {
   //       name: 'A',
@@ -66,9 +67,27 @@ const Voting = () => {
     }
   }
 
+  async function getCanVote(elecId) {
+    const result = await checkCanVote(elecId).then((res) => res);
+    setIsMember(result);
+    console.log(result);
+  }
+
+  useEffect(() => {
+    if (isAdminState === false) {
+      getCanVote(id);
+    }
+  }, [isAdminState]);
+
   if (currentActiveData == null || currentElection == null || overallElectionData == null) {
     return (
       <div className="p-20">Loading</div>
+    );
+  }
+
+  if (!isMember) {
+    return (
+      <div className="p-20">You are not allowed to vote.</div>
     );
   }
 

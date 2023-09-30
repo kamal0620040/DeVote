@@ -20,7 +20,7 @@ const CreateElection = () => {
   const [candidateIndexForImage, setCandidateIndexForImage] = useState(null);
   //  getting uploadToIPFS function from voteContext
   const { uploadToIPFS, createElection } = useContext(VoteContext);
-
+  const [temp, setTemp] = useState(0);
   // function to be used in dropzone when dropped
   const onDropFn = useCallback(async (acceptedFile, func) => {
     // upload image to blockchain aka IPFS
@@ -55,7 +55,8 @@ const CreateElection = () => {
 
   const addCandidate = () => {
     const newfield = { name: '', partyName: '', image: '' };
-    setCandidates([...candidates, newfield]);
+    // candidates.push(newfield);
+    setCandidates((prev) => [...prev, newfield]);
   };
 
   const removeCandidate = (index) => {
