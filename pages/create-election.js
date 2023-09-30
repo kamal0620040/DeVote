@@ -19,8 +19,8 @@ const CreateElection = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [candidateIndexForImage, setCandidateIndexForImage] = useState(null);
   //  getting uploadToIPFS function from voteContext
-  const { uploadToIPFS, createElection } = useContext(VoteContext);
-  const [temp, setTemp] = useState(0);
+  const { uploadToIPFS, createElection, isAdminState } = useContext(VoteContext);
+
   // function to be used in dropzone when dropped
   const onDropFn = useCallback(async (acceptedFile, func) => {
     // upload image to blockchain aka IPFS
@@ -64,6 +64,10 @@ const CreateElection = () => {
     data.splice(index, 1);
     setCandidates(data);
   };
+
+  if (!isAdminState) {
+    return <div className="p-20">You are not allowded to create election.</div>;
+  }
 
   return (
     <div className="flex justify-center sm:px-4 p-12 pt-24">

@@ -2,7 +2,7 @@ import Webcam from 'react-webcam';
 import { useCallback, useRef, useState } from 'react'; // import useCallback
 import Button from './Button';
 
-const CustomWebcam = () => {
+const CustomWebcam = ({ base64Callback, verifyCallback }) => {
   const webcamRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
 
@@ -14,7 +14,9 @@ const CustomWebcam = () => {
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImgSrc(imageSrc);
+    base64Callback(imgSrc);
     console.log(imageSrc);
+    // verifyCallback(imgSrc);
   }, [webcamRef]);
 
   return (

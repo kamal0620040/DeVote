@@ -10,7 +10,7 @@ const App = ({ Component, pageProps }) => (
       <div className="dark:bg-vote-dark bg-white min-h-screen">
         <NavBar />
         <Component {...pageProps} />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </ThemeProvider>
   </VoteProvider>

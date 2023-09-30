@@ -22,29 +22,35 @@ const ElectionCard = ({ election }) => {
           )
           : (
             <Image
-              src={images.defaultVoteCard}
+              src={images.vote}
               layout="fill"
               objectFit="cover"
               alt="election-banner"
             />
           )}
       </div>
-      <div className="mt-3 flex flex-col">
-        <p className="font-poppins dark:text-white text-vote-black-1 font-semibold text-sm minlg:text-xl">
-          {election.electionDetail.electionName}
-        </p>
-        <div className="flexBetween mt-3 minlg:mt-3 flex-row xs:flex-col xs:items-start xs:mt-3">
-          <p className="font-poppins dark:text-white text-vote-black-1 font-semibold text-xs minlg:text-lg">
+      <div className="mt-3 flex gap-8 justify-center items-center">
+        <div>
+          <p className="font-poppins dark:text-white text-vote-black-1 font-semibold text-base minlg:text-xl">
+            {election.electionDetail.electionName}
+          </p>
+          <p className="font-poppins dark:text-white text-vote-black-1 font-light text-xs minlg:text-lg">
             {election.options} <span className="normal">Candidates</span>
           </p>
-          <Button
-            btnName="View Details"
-            classStyles="rounded-xl text-xs px-3"
-            handleClick={() => {
+        </div>
+
+        <div className="flexBetween mt-3 minlg:mt-3 flex-row xs:flex-col xs:items-start xs:mt-3">
+          <button
+            // btnName="View Detail"
+            type="button"
+            className="rounded-xl text-xs px-3 py-2 bg-vote-black-1 border-2 border-regal-blue"
+            onClick={() => {
               router.push(`/election-detail/${election.id}`);
             }}
-          />
+          >View Detail
+          </button>
         </div>
+
       </div>
     </div>
   );

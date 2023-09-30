@@ -1,6 +1,8 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import axios from 'axios';
+import Webcam from 'react-webcam';
 import { Button, CustomWebcam, Modal } from '@/components';
 import images from '../../assets';
 import { VoteContext } from '../../context/VotingContext';
@@ -8,7 +10,7 @@ import { VoteContext } from '../../context/VotingContext';
 const Voting = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { elections, voteCandidate, checkCanVote, isAdminState } = useContext(VoteContext);
+  const { elections, voteCandidate, checkCanVote, isAdminState, getPk } = useContext(VoteContext);
   const [currentActiveData, setCurrentActiveData] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [overallElectionData, setOverallElectionData] = useState(null);
@@ -17,6 +19,26 @@ const Voting = () => {
   const [votingModel, setVotingModel] = useState(false);
   const [btnDisabled, setBtnDisabled] = useState(true);
   const [isMember, setIsMember] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [base64Image, setBase64Image] = useState(null);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [currentPk, setCurrentPk] = useState(null);
+
+  const webcamRef = useRef(null);
+  const [imgSrc, setImgSrc] = useState(null);
+
+  const retake = () => {
+    setImgSrc(null);
+  };
+
+  // create a capture function
+  const capture = useCallback(() => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    setImgSrc(imageSrc);
+    // base64Callback(imgSrc);
+    console.log(imageSrc);
+    verifyYourself(imgSrc);
+  }, [webcamRef]);
   //   const info = [
   //     {
   //       name: 'A',
@@ -37,6 +59,13 @@ const Voting = () => {
     elections(setOverallElectionData);
   }, []);
 
+  async function getCurrentPk() {
+    const result = await getPk().then((res) => res);
+    setCurrentPk(() => result);
+    // console.log(requestedMemberData);
+    // console.log(result);
+  }
+
   useEffect(() => {
     if (overallElectionData) {
       // eslint-disable-next-line eqeqeq
@@ -44,6 +73,7 @@ const Voting = () => {
       setCurrentElection(() => result);
       console.log(result);
       setCurrentActiveData(result.candidates[currentIndex]);
+      getCurrentPk();
     }
   }, [overallElectionData]);
 
@@ -73,6 +103,66 @@ const Voting = () => {
     console.log(result);
   }
 
+  function getExtractedBase64(imageData) {
+    const startIndex = imageData.indexOf(',') + 1;
+    const extractedString = imageData.substring(startIndex);
+
+    return extractedString;
+  }
+
+  function verifyYourself(imageData) {
+    // get webcame image in base64
+    console.log(imageData);
+    // fetch the currentImage using private key
+    // send both above image to image similarity function
+    axios({
+      method: 'POST',
+      url: `${process.env.NEXT_PUBLIC_BACKEND_API}/api/imgs`,
+      data: JSON.stringify({
+        img1: base64Image ? getExtractedBase64(base64Image) : getExtractedBase64(imageData),
+        img2: currentImage,
+      }),
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        // setTimeout(() => {
+        //   router.push(`/election-detail/${id}`, undefined, { shallow: true });
+        // }, 1000);
+        console.log('result', response.Result);
+        // setVerified();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    // is it returns true then set isVerified to true else false
+  }
+
+  useEffect(() => {
+    if (base64Image) {
+    //   verifyYourself(base64Image);
+    }
+  }, [base64Image]);
+
+  useEffect(() => {
+    if (currentPk != null) {
+      axios.get(`${process.env.NEXT_PUBLIC_BACKEND_API}/api/credentials/${id.toString() + currentPk}`, {
+        accept: 'application/json',
+        'Content-Type': 'application/json',
+      }).then((response) => {
+        console.log(response);
+        setCurrentImage(response.data.currentPhoto);
+        // setRequestedMemberImageData([...requestedMemberImageData, response.data]);
+        // console.log([...requestedMemberImageData, response.data]);
+        // console.log(response);
+      }).catch((e) => {
+        console.log(e);
+      });
+    }
+  }, [currentPk]);
+
   useEffect(() => {
     if (isAdminState === false) {
       getCanVote(id);
@@ -97,12 +187,18 @@ const Voting = () => {
         <Image src={currentElection.candidates[currentIndex].image} width={600} height={500} alt="something" className="rounded-lg" />
         <Image src={currentElection.candidates[currentIndex].image} width={100} height={100} alt="something" className="border-gray-400 border-2 rounded-lg absolute top-20" />
         <div className="flex p-4">
-          <Image src={images.left} className="mr-10" onClick={() => { handleDecrease(); }} width={30} height={30} />
+          <Image src={images.left} className="mr-20" onClick={() => { handleDecrease(); }} width={30} height={30} />
           <Image src={images.right} width={30} onClick={() => { handleIncrease(); }} height={30} />
         </div>
-        <div className="flex p-4">
-          <p className="font-poppins font-semibold text-xl">{currentElection.candidates[currentIndex].name}</p>
-          <p className="font-poppins font-semibold text-xl">{currentElection.candidates[currentIndex].partyName}</p>
+        <div className="flex p-4 gap-20 justify-center">
+          <div>
+            <p className="font-poppins font-normal">Name of candidate:</p>
+            <p className="font-poppins font-semibold text-xl">{currentElection.candidates[currentIndex].name}</p>
+          </div>
+          <div>
+            <p className="font-poppins font-normal">Political party:</p>
+            <p className="font-poppins font-semibold text-xl">{currentElection.candidates[currentIndex].partyName}</p>
+          </div>
           <Button btnName="Vote" classStyles="rounded-lg  ml-4" handleClick={() => { setVotingModel(true); }} />
         </div>
       </div>
@@ -112,19 +208,43 @@ const Voting = () => {
         header="Verify Yourself"
         body={(
           <div className="flexCenter flex-col text-center" onClick={() => setVotingModel(false)}>
-            <CustomWebcam />
+            <div className="container">
+              {imgSrc ? (
+                <img src={imgSrc} alt="webcam" />
+              ) : (
+                <Webcam height={600} width={600} ref={webcamRef} screenshotFormat="image/jpeg" screenshotQuality={0.6} className="rounded-lg mb-2" />
+              )}
+              <div className="btn-container">
+                {imgSrc ? (
+                  (<Button btnName="Retake" handleClick={retake} classStyles="rounded-lg" />)
+                ) : (
+                  <Button btnName="Capture" handleClick={capture} classStyles="rounded-lg" />
+                )}
+              </div>
+            </div>
           </div>
           )}
         footer={(
           <div className="flexCentre flex-col ">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:bg-blue-500 disabled:bg-opacity-50 disabled:cursor-not-allowed"
-              disabled={btnDisabled}
-              type="button"
-              onClick={() => { voteCandidate(id, currentIndex); }}
-            >
-              Vote
-            </button>
+            {verified
+              ? (
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:bg-blue-500 disabled:bg-opacity-50 disabled:cursor-not-allowed"
+                  disabled={btnDisabled}
+                  type="button"
+                  onClick={() => { voteCandidate(id, currentIndex); }}
+                >
+                  Vote
+                </button>
+              )
+              : (
+                <Button
+                  btnName="Verify"
+                  handleClick={() => {
+                    verifyYourself();
+                  }}
+                />
+              )}
           </div>
         )}
         handleClose={() => { setVotingModel(false); }}

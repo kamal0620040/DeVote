@@ -57,7 +57,7 @@ const Navbar = () => {
   const { isAdminState } = useContext(VoteContext);
 
   return (
-    <nav className="flexBetween w-full fixed z-10 p-4 flex-row border-b dark:bg-vote-dark bg-white dark:border-vote-black-1 border-vote-gray-1">
+    <nav className="flexBetween w-full fixed z-10 p-4 px-20 flex-row border-b dark:bg-vote-dark bg-white dark:border-vote-black-1 border-vote-gray-1">
       <div className="flex flex-1 flex-row justify-start">
         <Link href="/">
           <div className="flexCenter md:hidden cursor-pointer" onClick={() => {}}>

@@ -81,7 +81,7 @@ export const VoteProvider = ({ children }) => {
       const url = `${subdomain}/ipfs/${added.path}`;
       console.log('Data', url);
       await createVoting(url, date, options);
-    //   router.push('/');
+      router.push('/');
     } catch (error) {
       console.log(error);
       console.log('Error uploading data to IPFS.');

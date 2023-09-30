@@ -145,6 +145,11 @@ const ElectionDetail = () => {
     `
   ), [isDragActive, isDragAccept, isDragReject]);
 
+  const returnDate = (timestamp) => {
+    const d = new Date(timestamp);
+    return d.toISOString();
+  };
+
   useEffect(() => {
     if (isAdminState === true) {
       getRequestedMember();
@@ -168,8 +173,8 @@ const ElectionDetail = () => {
   return (
     <div className="relative flex justify-center md:flex-col min-h-screen">
       <div className="relative flex-1 flexCenter sm:px-4 p-0 border-r md:border-r-0 md:border-b dark:border-vote-black-1 border-vote-gray-1">
-        <div className="relative  minmd:w-2/3 minmd:h-2/3 sm:w-full sm:h-300 w-[400px] h-[250px]">
-          <Image src="https://devote.infura-ipfs.io/ipfs/QmPueBVGT1SfGfGswveCkx3opdn2AuvpvYJoEY137Vzrii" objectFit="cover" className=" rounded-xl shadow-lg" layout="fill" />
+        <div className="relative  minmd:w-2/3 minmd:h-2/3 sm:w-full sm:h-300 w-[600px] h-[350px]">
+          <Image src={images.defaultPost} objectFit="cover" className=" rounded-xl shadow-lg" layout="fill" />
         </div>
       </div>
       <div>
@@ -179,13 +184,14 @@ const ElectionDetail = () => {
           </div>
 
           <div className="mt-10">
-            <p className="font-poppins dark:text-white text-vote-black-1 font-semibold text-2xl minlg:text-2xl">Creator</p>
-            <div className="flex flex-row items-center mt-3">
+            <p className="font-poppins dark:text-white text-vote-black-1 font-normal text-xl minlg:text-2xl">Creator</p>
+            <div className="flex flex-row items-center  mt-3">
               <div className="relative w-12 h-12 minlg:w-20 minlg:h-20 mr-2">
-                <Image src={images.cross} objectFit="cover" className="rounded-full" />
+                <Image src={images.cross} height={30} objectFit="cover" className="rounded-full" />
               </div>
-              <p className="font-poppins dark:text-white text-vote-black-1 text-sm minlg:text-lg font-semibold">{`${election.owner.substring(0, 8)}...`}</p>
+              <p className="font-poppins -mt-5 dark:text-white text-vote-black-1 text-sm minlg:text-lg font-semibold">{`${election.owner.substring(0, 8)}...`}</p>
             </div>
+            <div>Ends on: {returnDate(election.endTime)}</div>
           </div>
         </div>
         <div className="m-4 my-8">

@@ -11,6 +11,8 @@ import loader from './loader.gif';
 import search from './Search.png';
 import arrow from './arrow.png';
 import defaultVoteCard from './defaultVoteCard.png';
+import defaultPost from './defaultPost.png';
+import vote from './vote.jpg';
 
 export default {
   logoMain,
@@ -26,4 +28,6 @@ export default {
   search,
   arrow,
   defaultVoteCard,
+  defaultPost,
+  vote,
 };

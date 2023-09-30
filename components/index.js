@@ -5,5 +5,6 @@ import Input from './Input';
 import ElectionCard from './ElectionCard';
 import CustomWebcam from './Webcam';
 import Modal from './Model';
+import Banner from './Banner';
 
-export { NavBar, Footer, Button, Input, ElectionCard, CustomWebcam, Modal };
+export { NavBar, Footer, Button, Input, ElectionCard, CustomWebcam, Modal, Banner };
