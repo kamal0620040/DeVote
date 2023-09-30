@@ -9,7 +9,7 @@ import { VoteContext } from '../context/VotingContext';
 import images from '../assets';
 import Button from './Button';
 
-const MenuItems = ({ isMobile, active, setActive }) => {
+const MenuItems = ({ isMobile, active, setActive, isAdminState }) => {
   const generateLink = (i) => {
     switch (i) {
       case 0:
@@ -25,28 +25,36 @@ const MenuItems = ({ isMobile, active, setActive }) => {
 
   return (
     <ul className={`list-none flexCenter flex-row ${isMobile && 'flex-col h-full'}`}>
-      {['My election'].map((item, idx) => (
-        <li key={idx} onClick={() => { setActive(item); }} className={`flex flex-row items-center font-poppins font-semibold text-base dark:hover:text-white hover:text-vote-dark mx-3 ${active === item ? 'dark:text-white text-vote-black-1' : 'dark:text-vote-gray-3 text-vote-gray-2'}`}>
-          <Link href={generateLink(idx)}>{item}</Link>
-        </li>
-      ))}
+      {['Home', 'My election'].map((item, idx) => {
+        // eslint-disable-next-line no-empty
+        if (item === 'My election' && isAdminState) {
+
+        } else {
+          return (
+            <li key={idx} onClick={() => { setActive(item); }} className={`flex flex-row items-center font-poppins font-semibold text-base dark:hover:text-white hover:text-vote-dark mx-3 ${active === item ? 'dark:text-white text-vote-black-1' : 'dark:text-vote-gray-3 text-vote-gray-2'}`}>
+              <Link href={generateLink(idx)}>{item}</Link>
+            </li>
+          );
+        }
+      })}
     </ul>
   );
 };
 
 const ButtonGroup = ({ setActive, router }) => {
-  const { connectWallet, currentAccount } = useContext(VoteContext);
+  const { connectWallet, currentAccount, isAdminState } = useContext(VoteContext);
 
-  return currentAccount ? (
-    <Button btnName="Create Election" classStyles="mx-2 rounded-xl" handleClick={() => { setActive(''); router.push('/create-election'); }} />
-  ) : (<Button btnName="Connect" classStyles="mx-2 rounded-xl" handleClick={() => { connectWallet(); }} />);
+  return currentAccount
+    ? isAdminState && (<Button btnName="Create Election" classStyles="mx-2 rounded-xl" handleClick={() => { setActive(''); router.push('/create-election'); }} />)
+    : (<Button btnName="Connect" classStyles="mx-2 rounded-xl" handleClick={() => { connectWallet(); }} />);
 };
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
-  const [active, setActive] = useState('Explore');
+  const [active, setActive] = useState('Home');
   const [isOpen, setIsOpen] = useState(false);
+  const { isAdminState } = useContext(VoteContext);
 
   return (
     <nav className="flexBetween w-full fixed z-10 p-4 flex-row border-b dark:bg-vote-dark bg-white dark:border-vote-black-1 border-vote-gray-1">
@@ -73,7 +81,7 @@ const Navbar = () => {
           </label>
         </div>
         <div className="md:hidden flex">
-          <MenuItems active={active} setActive={setActive} />
+          <MenuItems active={active} setActive={setActive} isAdminState={isAdminState} />
           <div className="ml-4">
             <ButtonGroup setActive={setActive} router={router} />
           </div>

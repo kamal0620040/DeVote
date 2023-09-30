@@ -87,7 +87,7 @@ const Voting = () => {
 
   if (!isMember) {
     return (
-      <div className="p-20">You are not allowed to vote.</div>
+      <div className="p-20 text-center pt-40 text-xl font-semibold">You are not allowed to vote.</div>
     );
   }
 
