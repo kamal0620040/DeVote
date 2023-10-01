@@ -183,7 +183,7 @@ export const VoteProvider = ({ children }) => {
     return dataElection;
   };
 
-  const becomeMemberOfElection = async (elecId) => {
+  const becomeMemberOfElection = async (elecId, router) => {
     const web3modal = new Web3Modal();
     const connection = await web3modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
@@ -193,6 +193,9 @@ export const VoteProvider = ({ children }) => {
     const signer = provider.getSigner();
     const contract = fetchContract(signer);
     await contract.sendRequestToBecomeMember(elecId).then(() => alert('Success')).catch(() => alert('Failed'));
+    setTimeout(() => {
+      router.reload();
+    }, [10000]);
   };
 
   const hadRequestedForElection = async (electionId) => {
@@ -234,7 +237,7 @@ export const VoteProvider = ({ children }) => {
     return result;
   };
 
-  const acceptRequestToBecomeMember = async (electionId, member) => {
+  const acceptRequestToBecomeMember = async (electionId, member, router) => {
     const web3modal = new Web3Modal();
     const connection = await web3modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
@@ -244,7 +247,11 @@ export const VoteProvider = ({ children }) => {
     const signer = provider.getSigner();
     const contract = fetchContract(signer);
     const result = await contract.acceptRequestToBecomeMember(electionId, member).then(() => 'success').catch(() => 'failed');
-    return result;
+    if (result === 'success') {
+      setTimeout(() => {
+        router.reload();
+      }, [10000]);
+    }
   };
 
   const getPk = async () => {

@@ -215,7 +215,7 @@ const ElectionDetail = () => {
                               btnName="Approve"
                               classStyles="ml-20 rounded-lg"
                               handleClick={() => {
-                                acceptRequestToBecomeMember(id, requestedMemberData[index]);
+                                acceptRequestToBecomeMember(id, requestedMemberData[index], router);
                               }}
                             />
                           </div>
@@ -353,7 +353,7 @@ const ElectionDetail = () => {
                       btnName="Register"
                       classStyles="mt-10 rounded-lg"
                       handleClick={() => {
-                        becomeMemberOfElection(id);
+                        becomeMemberOfElection(id, router);
                         // console.log('citizen', citizenshipImage);
                         // console.log('current', currentImage);
                         axios({
@@ -370,9 +370,11 @@ const ElectionDetail = () => {
                           },
                         })
                           .then(() => {
-                            setTimeout(() => {
-                              router.push(`/election-detail/${id}`, undefined, { shallow: true });
-                            }, 1000);
+                            // setTimeout(() => {
+                            //   router.reload();
+                            // //   router.push(`/election-detail/${id}`, undefined, { shallow: true });
+                            // }, 10000);
+                            console.log('Success');
                           })
                           .catch((err) => {
                             console.log(err);
