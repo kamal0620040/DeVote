@@ -1,38 +1,48 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<p align="center">
+        <img src="assets/defaultPost.png" align="center" alt="bookverse-icon" height="400px" width="800px"  />
+</p>
+<h1 align="center" style="border: 0;">De - Vote : Frontend</h1>
 
-## Getting Started
+  "De-Vote" is the platform that replicate how can government can conduct elections in a safe and fair manner online using Blockchain technology that solves the problem of foreign employeers that are not able to vote in their own country election.
 
-First, run the development server:
+
+## Run Locally
+
+Clone the project
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+  git clone https://github.com/kamal0620040/DeVote.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Go to the project directory
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```bash
+  cd Devote
+```
+Install dependencies present in [package.json](https://github.com/kamal0620040/DeVote/blob/master/package.json) file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+```bash
+  npm install
+```
+Now, run the hardhat local network for conneting the wallet
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```bash
+  npx hardhat node
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Deploy the smart contract locally by running
+Make sure that ether.js package  version in package.json is >6. [only for deploting smart contract]
+```bash
+  npx hardhat run scripts/deploy.js --network localhost
+```
 
-## Learn More
+Due to the issue of ether.js function in next.js version >= 13. Before running the project edit package.json and set ether.js version 5.4.2, run npm install and then create server
 
-To learn more about Next.js, take a look at the following resources:
+Finally, you can start the next.js server
+```bash
+  npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Tech Stack
+Solidity, Next JS, Tailwind CSS, JSX, Ethereum, Hardhat, IPFS, Django
