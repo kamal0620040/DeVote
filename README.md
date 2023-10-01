@@ -1,5 +1,5 @@
 <p align="center">
-        <img src="assets/defaultPost.png" align="center" alt="bookverse-icon" height="400px" width="800px"  />
+        <img src="assets/defaultPost.png" align="center" alt="bookverse-icon" height="500px" width="800px"  />
 </p>
 <h1 align="center" style="border: 0;">De - Vote </h1>
 
@@ -24,6 +24,9 @@ Install dependencies present in [package.json](https://github.com/kamal0620040/D
 ```bash
   npm install
 ```
+
+Set environment variable present in .example.env file
+
 Now, run the hardhat local network for conneting the wallet
 
 ```bash
