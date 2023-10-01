@@ -15,8 +15,6 @@ const MenuItems = ({ isMobile, active, setActive, isAdminState }) => {
       case 0:
         return '/';
       case 1:
-        return '/listed-votes';
-      case 2:
         return '/my-election';
       default:
         return '/';

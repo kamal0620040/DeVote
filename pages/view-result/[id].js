@@ -32,20 +32,23 @@ const ViewResult = () => {
 
   return (
     <div className="p-20">
-      <div className="text-center font-semibold text-xl font-poppins">Result of {currentElection.electionDetail.electionName}</div>
-      <div className="flex flex-col items-center">
+      <div className="text-center font-semibold text-2xl font-poppins">Result of {currentElection.electionDetail.electionName}</div>
+      <div className="flex flex-col items-center mt-16">
         {
             currentElection.candidates.map((val, idx) => (
               <div className="p-2 bg-vote-black-3 m-2 rounded-lg w-2/3">
                 <div className="flex justify-around items-center m-2">
-                  <div>{val.name}</div>
+                  <div className="font-semibold text-xl">{val.name}</div>
+                  <div className="font-semibold text-xl">{val.partyName}</div>
                   <Image src={val.image} height={100} width={100} className="rounded-lg" />
                 </div>
-                <ProgressBar completed={(currentElection.votes[idx] / currentElection.totalVotes) * 100} transitionDuration="2s" animateOnRender />
+                <div className="text-center mb-4 font-poppins">Vote Count: {currentElection.votes[idx]}</div>
+                <ProgressBar completed={(currentElection.votes[idx] / currentElection.totalVotes) * 100} bgColor="#3772FF" transitionDuration="2s" labelColor="#000" animateOnRender />
               </div>
             ))
         }
       </div>
+      <div className="text-center font-poppins font-semibold mt-4">Total Votes: {currentElection.totalVotes}</div>
     </div>
   );
 };

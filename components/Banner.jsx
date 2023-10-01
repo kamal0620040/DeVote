@@ -1,9 +1,9 @@
 import React from 'react';
 
 const Banner = ({ childStyles, parentStyles, banner }) => (
-  <div className={`relative w-3/4 flex items-center justify-center z-0 overflow-hidden vote-gradient ${parentStyles}`}>
+  <div className={`relative w-5/6 flex items-center justify-center z-0 overflow-hidden vote-gradient ${parentStyles}`}>
     <div className="">
-      <p className={`font-bold text-4xl font-poppins leading-70 ${childStyles} `}>Empowering Nepals Democracy</p>
+      <p className={`font-bold text-4xl font-poppins leading-70 ${childStyles} `}>Empowering Nepal's Democracy</p>
       <p className={`font-normal text-xl text-center font-poppins ${childStyles} `}>Your Voice, Your Vote, Decentralized!</p>
     </div>
     <div className="absolute w-48 h-48 sm:w-32 sm:h-32 rounded-full white-bg -top-9 -left-16 -z-5" />
