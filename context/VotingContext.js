@@ -278,7 +278,9 @@ export const VoteProvider = ({ children }) => {
     const contract = fetchContract(signer);
     const result = await contract.vote(electionId, option).then(() => 'success').catch(() => 'failed');
     if (result === 'success') {
-      router.push(`/view-result/${electionId}`);
+      setTimeout(() => {
+        router.push(`/view-result/${electionId}`);
+      }, [10000]);
     } else {
     //   router.push(`/view-result/${electionId}`);
     }
