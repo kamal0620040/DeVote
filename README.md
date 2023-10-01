@@ -1,12 +1,12 @@
 <p align="center">
         <img src="assets/defaultPost.png" align="center" alt="bookverse-icon" height="400px" width="800px"  />
 </p>
-<h1 align="center" style="border: 0;">De - Vote : Frontend</h1>
+<h1 align="center" style="border: 0;">De - Vote </h1>
 
   "De-Vote" is the platform that replicate how can government can conduct elections in a safe and fair manner online using Blockchain technology that solves the problem of foreign employeers that are not able to vote in their own country election.
 
 
-## Run Locally
+## Run Locally - Frontend
 
 Clone the project
 
@@ -43,6 +43,37 @@ Finally, you can start the next.js server
   npm run dev
 ```
 
+## Run Locally - backend
+
+Go to the backend directory from root directory
+
+```bash
+  cd backend
+```
+Setup python venv
+```
+  python3 venv myenv
+```
+
+Activate virtual environment [window command]
+```
+  myenv\Scripts\activate
+```
+
+Install all the required packages
+```
+  pip install -r requirements.txt
+```
+
+Apply migrations
+```
+  python manage.py migrate
+```
+
+Run the server
+```
+  python manage.py runserver
+```
 
 ## Tech Stack
 Solidity, Next JS, Tailwind CSS, JSX, Ethereum, Hardhat, IPFS, Django
